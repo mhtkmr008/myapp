@@ -8,13 +8,16 @@ const TestPage = () => {
   const [score, setScore] = useState(0);
 
   const handleOptionChange = (questionIndex, selectedOption) => {
-    setAnswers({
-      ...answers,
-      [questionIndex]: selectedOption
-    });
+    if (!rollNumber) return; // Prevent selecting answers before entering roll number
+    setAnswers({ ...answers, [questionIndex]: selectedOption });
   };
 
   const handleSubmit = async () => {
+    if (!rollNumber) {
+      alert("Please enter your roll number before submitting!");
+      return;
+    }
+
     let tempScore = 0;
 
     questionsData.forEach((q, index) => {
@@ -26,22 +29,26 @@ const TestPage = () => {
     setScore(tempScore);
     setSubmitted(true);
 
-    // Send to Google Sheets
-    const response = await fetch("https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec", {
-      method: "POST",
-      body: JSON.stringify({
-        rollNumber,
-        score: tempScore
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
+    try {
+      // Send data to Google Apps Script
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec",
+        {
+          method: "POST",
+          body: JSON.stringify({ rollNumber, score: tempScore }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    if (response.ok) {
-      alert("Score submitted successfully!");
-    } else {
-      alert("Failed to submit score.");
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Score submitted successfully!");
+      } else {
+        alert(`Failed to submit score: ${data.error}`);
+      }
+    } catch (error) {
+      alert("Error submitting score. Please try again.");
     }
   };
 
@@ -72,6 +79,7 @@ const TestPage = () => {
                     value={option}
                     checked={answers[index] === option}
                     onChange={() => handleOptionChange(index, option)}
+                    disabled={!rollNumber} // Disable options if roll number is empty
                   />
                   {option}
                 </label>
