@@ -8,18 +8,17 @@ const TestPage = () => {
   const [score, setScore] = useState(0);
 
   const handleOptionChange = (questionIndex, selectedOption) => {
-    if (!rollNumber) return; // Prevent selecting answers before entering roll number
+    if (!rollNumber) return; // Prevent answering before roll number is entered
     setAnswers({ ...answers, [questionIndex]: selectedOption });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!rollNumber) {
       alert("Please enter your roll number before submitting!");
       return;
     }
 
     let tempScore = 0;
-
     questionsData.forEach((q, index) => {
       if (answers[index] === q.correctAnswer) {
         tempScore++;
@@ -29,27 +28,33 @@ const TestPage = () => {
     setScore(tempScore);
     setSubmitted(true);
 
-    try {
-      // Send data to Google Apps Script
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec' from origin 'https://rankershome-test.netlify.app' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource",
-        {
-          method: "POST",
-          body: JSON.stringify({ rollNumber, score: tempScore }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+    // Show data being sent
+    const dataToSend = {
+      rollNumber: rollNumber,
+      score: tempScore,
+    };
+    alert("Sending to script:\n" + JSON.stringify(dataToSend, null, 2));
 
-      const data = await response.json();
+    // Create a form to submit data
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action =
+      "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec";
 
-      if (response.ok) {
-        alert("Score submitted successfully!");
-      } else {
-        alert(`Failed to submit score: ${data.error}`);
-      }
-    } catch (error) {
-      alert("Error submitting score. Please try again.");
-    }
+    const rollInput = document.createElement("input");
+    rollInput.type = "hidden";
+    rollInput.name = "rollNumber";
+    rollInput.value = rollNumber;
+    form.appendChild(rollInput);
+
+    const scoreInput = document.createElement("input");
+    scoreInput.type = "hidden";
+    scoreInput.name = "score";
+    scoreInput.value = tempScore;
+    form.appendChild(scoreInput);
+
+    document.body.appendChild(form);
+    form.submit();
   };
 
   return (
@@ -79,7 +84,7 @@ const TestPage = () => {
                     value={option}
                     checked={answers[index] === option}
                     onChange={() => handleOptionChange(index, option)}
-                    disabled={!rollNumber} // Disable options if roll number is empty
+                    disabled={!rollNumber}
                   />
                   {option}
                 </label>
@@ -96,7 +101,9 @@ const TestPage = () => {
         <div>
           <h3>Test Submitted!</h3>
           <p>Roll Number: {rollNumber}</p>
-          <p>Your Score: {score} / {questionsData.length}</p>
+          <p>
+            Your Score: {score} / {questionsData.length}
+          </p>
         </div>
       )}
     </div>
