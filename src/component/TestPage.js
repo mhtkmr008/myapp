@@ -12,49 +12,46 @@ const TestPage = () => {
     setAnswers({ ...answers, [questionIndex]: selectedOption });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!rollNumber) {
       alert("Please enter your roll number before submitting!");
       return;
     }
-
+  
     let tempScore = 0;
     questionsData.forEach((q, index) => {
       if (answers[index] === q.correctAnswer) {
         tempScore++;
       }
     });
-
+  
     setScore(tempScore);
     setSubmitted(true);
-
-    // Show data being sent
+  
     const dataToSend = {
       rollNumber: rollNumber,
       score: tempScore,
     };
+  
     alert("Sending to script:\n" + JSON.stringify(dataToSend, null, 2));
-
-    // Create a form to submit data
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action =
-      "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec";
-
-    const rollInput = document.createElement("input");
-    rollInput.type = "hidden";
-    rollInput.name = "rollNumber";
-    rollInput.value = rollNumber;
-    form.appendChild(rollInput);
-
-    const scoreInput = document.createElement("input");
-    scoreInput.type = "hidden";
-    scoreInput.name = "score";
-    scoreInput.value = tempScore;
-    form.appendChild(scoreInput);
-
-    document.body.appendChild(form);
-    form.submit();
+  
+    try {
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSend),
+        }
+      );
+  
+      const result = await response.json();
+      console.log("Response from Google Apps Script:", result);
+      alert(`Score submitted successfully! View the response: ${JSON.stringify(result, null, 2)}`);
+    } catch (error) {
+      console.error("Error submitting score:", error);
+      alert("Submission failed, please try again.");
+    }
   };
 
   return (
