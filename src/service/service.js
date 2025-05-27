@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1TaNWM6qFhCtbx8AbXoIzalv2J6j_-LzibqxbywPNyg3sXFnY5FquMNQlLoBOfUEV2Q/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzv_kDsiK64ChkMK9VzgzkcLeMjeeqf5pJ1Y0r7y_SePjFtUssmDtsTXyNvPRBkBtoWsQ/exec";
 
 export const submitScore = async (rollNumber, score) => {
     const formData = new FormData();
