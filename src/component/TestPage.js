@@ -40,8 +40,7 @@ const TestPage = () => {
     alert("Sending to script:\n" + JSON.stringify(dataToSend, null, 2));
 
     try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec",
+      const response = await fetch("https://script.google.com/macros/s/AKfycbxVo6uEJhfjZ2ZgU2NFa5Eq98QD6aHvIFgxERl9huiMX8bhnzhQIz4W6rJXpV4X7XEv6g/exec",
         {
           method: "POST",
           headers: {
