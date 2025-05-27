@@ -1,128 +1,101 @@
 import React, { useState } from "react";
 import questionsData from "../data/questions.json";
+import { submitScore } from "../service/service"; // Import the service function
 
 const TestPage = () => {
-  const [rollNumber, setRollNumber] = useState("");
-  const [answers, setAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+    const [rollNumber, setRollNumber] = useState("");
+    const [answers, setAnswers] = useState({});
+    const [submitted, setSubmitted] = useState(false);
+    const [score, setScore] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-  const handleOptionChange = (questionIndex, selectedOption) => {
-    if (!rollNumber) return;
-    setAnswers({ ...answers, [questionIndex]: selectedOption });
-  };
-
-  const handleSubmit = async () => {
-    if (!rollNumber.trim()) {
-      alert("Please enter a valid roll number!");
-      return;
-    }
-
-    let tempScore = 0;
-    questionsData.forEach((q, index) => {
-      if (answers[index] === q.correctAnswer) {
-        tempScore++;
-      }
-    });
-
-    setScore(tempScore);
-    setSubmitted(true);
-    setLoading(true);
-    setErrorMessage("");
-
-    const dataToSend = {
-      rollNumber: rollNumber.trim(),
-      score: tempScore,
+    const handleOptionChange = (questionIndex, selectedOption) => {
+        if (!rollNumber) return;
+        setAnswers({ ...answers, [questionIndex]: selectedOption });
     };
 
-    alert("Sending to script:\n" + JSON.stringify(dataToSend, null, 2));
-
-    try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbxVo6uEJhfjZ2ZgU2NFa5Eq98QD6aHvIFgxERl9huiMX8bhnzhQIz4W6rJXpV4X7XEv6g/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(dataToSend),
+    const handleSubmit = async () => {
+        if (!rollNumber.trim()) {
+            alert("Please enter a valid roll number!");
+            return;
         }
-      );
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.statusText}`);
-      }
+        let tempScore = 0;
+        questionsData.forEach((q, index) => {
+            if (answers[index] === q.correctAnswer) {
+                tempScore++;
+            }
+        });
 
-      const result = await response.json();
-      
-      if (result.success) {
-        alert(`Score submitted successfully! Response: ${JSON.stringify(result, null, 2)}`);
-      } else {
-        throw new Error(result.message);
-      }
-      
-    } catch (error) {
-      console.error("Error submitting score:", error);
-      setErrorMessage("Submission failed, please check your network or try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        setScore(tempScore);
+        setSubmitted(true);
+        setLoading(true);
+        setErrorMessage("");
 
-  return (
-    <div>
-      <h2>Online Test</h2>
+        try {
+            const result = await submitScore(rollNumber, tempScore);
+            alert(`Score submitted successfully! Response: ${JSON.stringify(result, null, 2)}`);
+        } catch (error) {
+            setErrorMessage(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      {!submitted ? (
-        <>
-          <div>
-            <label>Enter Roll Number: </label>
-            <input
-              type="text"
-              value={rollNumber}
-              onChange={(e) => setRollNumber(e.target.value)}
-              required
-            />
-          </div>
-
-          {questionsData.map((q, index) => (
-            <div key={index}>
-              <p>{q.question}</p>
-              {q.options.map((option, optIdx) => (
-                <label key={optIdx}>
-                  <input
-                    type="radio"
-                    name={`question-${index}`}
-                    value={option}
-                    checked={answers[index] === option}
-                    onChange={() => handleOptionChange(index, option)}
-                    disabled={!rollNumber}
-                  />
-                  {option}
-                </label>
-              ))}
-              <hr />
-            </div>
-          ))}
-
-          <button onClick={handleSubmit} disabled={!rollNumber || loading}>
-            {loading ? "Submitting..." : "Submit"}
-          </button>
-
-          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-        </>
-      ) : (
+    return (
         <div>
-          <h3>Test Submitted!</h3>
-          <p>Roll Number: {rollNumber}</p>
-          <p>
-            Your Score: {score} / {questionsData.length}
-          </p>
+            <h2>Online Test</h2>
+
+            {!submitted ? (
+                <>
+                    <div>
+                        <label>Enter Roll Number: </label>
+                        <input
+                            type="text"
+                            value={rollNumber}
+                            onChange={(e) => setRollNumber(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    {questionsData.map((q, index) => (
+                        <div key={index}>
+                            <p>{q.question}</p>
+                            {q.options.map((option, optIdx) => (
+                                <label key={optIdx}>
+                                    <input
+                                        type="radio"
+                                        name={`question-${index}`}
+                                        value={option}
+                                        checked={answers[index] === option}
+                                        onChange={() => handleOptionChange(index, option)}
+                                        disabled={!rollNumber}
+                                    />
+                                    {option}
+                                </label>
+                            ))}
+                            <hr />
+                        </div>
+                    ))}
+
+                    <button onClick={handleSubmit} disabled={!rollNumber || loading}>
+                        {loading ? "Submitting..." : "Submit"}
+                    </button>
+
+                    {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+                </>
+            ) : (
+                <div>
+                    <h3>Test Submitted!</h3>
+                    <p>Roll Number: {rollNumber}</p>
+                    <p>
+                        Your Score: {score} / {questionsData.length}
+                    </p>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default TestPage;
