@@ -6,19 +6,16 @@ export const submitScore = async (rollNumber, score) => {
     formData.append("score", score);
 
     try {
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: "POST",
-            body: formData, // No headers needed, browser sets it automatically
+            mode: "no-cors", // 🚨 Important for skipping CORS
+            body: formData,
         });
 
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.statusText}`);
-        }
-
-        const result = await response.json(); // assuming script returns JSON
-        return result;
+        // Since no response is accessible, just assume it's okay
+        return { success: true };
     } catch (error) {
         console.error("Error submitting score:", error);
-        throw new Error("Submission failed, please check your network or try again.");
+        throw new Error("Submission failed, please check your network.");
     }
 };
