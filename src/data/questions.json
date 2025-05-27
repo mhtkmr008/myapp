@@ -1,13 +1,52 @@
 [
-    {
-      "question": "What is 2 + 2?",
-      "options": ["3", "4", "5", "6"],
-      "correctAnswer": "4"
-    },
-    {
-      "question": "Capital of France?",
-      "options": ["Berlin", "London", "Paris", "Rome"],
-      "correctAnswer": "Paris"
-    }
-  ]
-  
+  {
+    "question": "What is the capital of Japan?",
+    "options": ["Seoul", "Tokyo", "Beijing", "Bangkok"],
+    "correctAnswer": "Tokyo"
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+    "correctAnswer": "Mars"
+  },
+  {
+    "question": "What is 5 x 6?",
+    "options": ["30", "25", "35", "20"],
+    "correctAnswer": "30"
+  },
+  {
+    "question": "Which gas do plants absorb from the atmosphere?",
+    "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"],
+    "correctAnswer": "Carbon Dioxide"
+  },
+  {
+    "question": "Who wrote 'Romeo and Juliet'?",
+    "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Mark Twain"],
+    "correctAnswer": "William Shakespeare"
+  },
+  {
+    "question": "Which organ in the human body pumps blood?",
+    "options": ["Lungs", "Liver", "Heart", "Kidneys"],
+    "correctAnswer": "Heart"
+  },
+  {
+    "question": "Which continent is the Sahara Desert located in?",
+    "options": ["Asia", "Africa", "Australia", "South America"],
+    "correctAnswer": "Africa"
+  },
+  {
+    "question": "What is the boiling point of water in Celsius?",
+    "options": ["100", "90", "80", "120"],
+    "correctAnswer": "100"
+  },
+  {
+    "question": "How many days are there in a leap year?",
+    "options": ["365", "366", "364", "367"],
+    "correctAnswer": "366"
+  },
+  {
+    "question": "What is the square root of 49?",
+    "options": ["6", "7", "8", "9"],
+    "correctAnswer": "7"
+  }
+]
