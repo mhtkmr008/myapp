@@ -1,20 +1,21 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVo6uEJhfjZ2ZgU2NFa5Eq98QD6aHvIFgxERl9huiMX8bhnzhQIz4W6rJXpV4X7XEv6g/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1TaNWM6qFhCtbx8AbXoIzalv2J6j_-LzibqxbywPNyg3sXFnY5FquMNQlLoBOfUEV2Q/exec";
 
 export const submitScore = async (rollNumber, score) => {
-    const dataToSend = { rollNumber: rollNumber.trim(), score };
+    const formData = new FormData();
+    formData.append("rollNumber", rollNumber.trim());
+    formData.append("score", score);
 
     try {
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dataToSend),
+            body: formData, // No headers needed, browser sets it automatically
         });
 
         if (!response.ok) {
             throw new Error(`Server error: ${response.statusText}`);
         }
 
-        const result = await response.json();
+        const result = await response.json(); // assuming script returns JSON
         return result;
     } catch (error) {
         console.error("Error submitting score:", error);
