@@ -7,6 +7,7 @@ const TestPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleOptionChange = (questionIndex, selectedOption) => {
     if (!rollNumber) return;
@@ -28,6 +29,8 @@ const TestPage = () => {
 
     setScore(tempScore);
     setSubmitted(true);
+    setLoading(true);
+    setErrorMessage("");
 
     const dataToSend = {
       rollNumber: rollNumber.trim(),
@@ -36,16 +39,13 @@ const TestPage = () => {
 
     alert("Sending to script:\n" + JSON.stringify(dataToSend, null, 2));
 
-    setLoading(true);
-
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec",
+        "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            "Content-Type": "application/json"
           },
           body: JSON.stringify(dataToSend),
         }
@@ -56,11 +56,16 @@ const TestPage = () => {
       }
 
       const result = await response.json();
-      console.log("Response from Google Apps Script:", result);
-      alert(`Score submitted successfully! Response: ${JSON.stringify(result, null, 2)}`);
+      
+      if (result.success) {
+        alert(`Score submitted successfully! Response: ${JSON.stringify(result, null, 2)}`);
+      } else {
+        throw new Error(result.message);
+      }
+      
     } catch (error) {
       console.error("Error submitting score:", error);
-      alert("Submission failed, please check your network or try again.");
+      setErrorMessage("Submission failed, please check your network or try again.");
     } finally {
       setLoading(false);
     }
@@ -105,6 +110,8 @@ const TestPage = () => {
           <button onClick={handleSubmit} disabled={!rollNumber || loading}>
             {loading ? "Submitting..." : "Submit"}
           </button>
+
+          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         </>
       ) : (
         <div>
