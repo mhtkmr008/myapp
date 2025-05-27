@@ -41,7 +41,7 @@ const TestPage = () => {
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec",
+        "https://script.google.com/macros/s/AKfycbyeh0VMNUAcjqUdWUdBcxP-6zif9kFcK3FGJsTl0oHLyDVCW7T9NNgmeSk5YB1TNdVX/exec",
         {
           method: "POST",
           headers: {
