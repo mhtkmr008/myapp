@@ -33,7 +33,7 @@ const TestPage = () => {
     const lines = csv.trim().split("\n").filter(line => line.trim() !== "");
     if (lines.length < 2) return [];
 
-    const headers = lines[0].split(",").map(h => h.trim());
+    //const headers = lines[0].split(",").map(h => h.trim());
     // Expected headers: question, option1, option2, option3, ..., correctAnswer
 
     return lines.slice(1).map(line => {
