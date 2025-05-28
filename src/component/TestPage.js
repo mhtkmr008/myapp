@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import questionsData from "../data/questions.json";
 import { submitScore } from "../service/service";
+import "../css/TestPage.css";
 
 const TestPage = () => {
     const [rollNumber, setRollNumber] = useState("");
@@ -21,8 +22,12 @@ const TestPage = () => {
         if (currentQuestion < questionsData.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
         } else {
-            handleSubmit(); // last question, submit
+            handleSubmit();
         }
+    };
+
+    const handleSkip = () => {
+        handleNext();
     };
 
     const handleSubmit = async () => {
@@ -52,58 +57,84 @@ const TestPage = () => {
     };
 
     return (
-        <div>
+        <div className="test-container">
             <h2>Online Test</h2>
 
             {!submitted ? (
                 <>
-                    <div>
-                        <label>Name: </label>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                    {/* User Info */}
+                    <div className="user-info">
+                        <label>
+                            Name:
+                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                        </label>
+
+                        <label>
+                            Email:
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </label>
+
+                        <label>
+                            Roll Number:
+                            <input type="text" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} />
+                        </label>
                     </div>
-                    <div>
-                        <label>Email: </label>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    <div>
-                        <label>Roll Number: </label>
-                        <input type="text" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} />
-                    </div>
+
                     <hr />
 
-                    <div>
-                        <p>
-                            <strong>Q{currentQuestion + 1}:</strong> {questionsData[currentQuestion].question}
-                        </p>
-                        {questionsData[currentQuestion].options.map((option, index) => (
-                            <label key={index} style={{ display: "block" }}>
-                                <input
-                                    type="radio"
-                                    name={`question-${currentQuestion}`}
-                                    value={option}
-                                    checked={answers[currentQuestion] === option}
-                                    onChange={() => handleOptionChange(option)}
-                                />
-                                {option}
-                            </label>
-                        ))}
+                    {/* Main Test Area */}
+                    <div className="test-layout">
+                        {/* Question Area */}
+                        <div className="question-area">
+                            <p>
+                                <strong>Q{currentQuestion + 1}:</strong> {questionsData[currentQuestion].question}
+                            </p>
+                            {questionsData[currentQuestion].options.map((option, index) => (
+                                <label key={index} className="option-label">
+                                    <input
+                                        type="radio"
+                                        name={`question-${currentQuestion}`}
+                                        value={option}
+                                        checked={answers[currentQuestion] === option}
+                                        onChange={() => handleOptionChange(option)}
+                                    />
+                                    {option}
+                                </label>
+                            ))}
+
+                            <div className="button-group">
+                                <button onClick={handleNext} disabled={loading}>
+                                    {currentQuestion < questionsData.length - 1 ? "Next" : "Submit"}
+                                </button>
+                                <button onClick={handleSkip} disabled={loading}>Skip</button>
+                            </div>
+
+                            {errorMessage && <p className="error-message">{errorMessage}</p>}
+                        </div>
+
+                        {/* Review Panel */}
+                        <div className="review-panel">
+                            {questionsData.map((_, index) => (
+                                <button
+                                    key={index}
+                                    className={`review-button ${
+                                        currentQuestion === index ? "active" : ""
+                                    } ${answers[index] ? "answered" : "unanswered"}`}
+                                    onClick={() => setCurrentQuestion(index)}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-
-                    <button onClick={handleNext} disabled={!answers[currentQuestion] || loading}>
-                        {currentQuestion < questionsData.length - 1 ? "Next" : "Submit"}
-                    </button>
-
-                    {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
                 </>
             ) : (
-                <div>
+                <div className="result-summary">
                     <h3>Test Submitted!</h3>
                     <p>Name: {name}</p>
                     <p>Email: {email}</p>
                     <p>Roll Number: {rollNumber}</p>
-                    <p>
-                        Your Score: {score} / {questionsData.length}
-                    </p>
+                    <p>Your Score: {score} / {questionsData.length}</p>
                 </div>
             )}
         </div>
